@@ -114,5 +114,54 @@ export declare function registerConversationTools(server: Server, client: LineNo
             limit?: number;
         }) => Promise<import("../client.js").ApiResponse<unknown>>;
     };
+    line_get_webhook_events: {
+        name: string;
+        description: string;
+        inputSchema: {
+            type: "object";
+            properties: {
+                botId: {
+                    type: string;
+                    description: string;
+                    default: string;
+                };
+                sourceUserId: {
+                    type: string;
+                    description: string;
+                };
+                sourceGroupId: {
+                    type: string;
+                    description: string;
+                };
+                type: {
+                    type: string;
+                    enum: string[];
+                    description: string;
+                };
+                limit: {
+                    type: string;
+                    description: string;
+                    default: number;
+                };
+                startDate: {
+                    type: string;
+                    description: string;
+                };
+                endDate: {
+                    type: string;
+                    description: string;
+                };
+            };
+        };
+        handler: (args: {
+            botId?: string;
+            sourceUserId?: string;
+            sourceGroupId?: string;
+            type?: string;
+            limit?: number;
+            startDate?: string;
+            endDate?: string;
+        }) => Promise<import("../client.js").ApiResponse<unknown>>;
+    };
 };
 //# sourceMappingURL=conversations.d.ts.map

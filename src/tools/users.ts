@@ -106,7 +106,8 @@ export function registerUserTools(server: Server, client: LineNotificationClient
         required: ["userId", "tags"],
       },
       handler: async (args: { botId?: string; userId: string; tags: string[] }) => {
-        return client.put(`/api/users/${args.userId}/tags`, { tags: args.tags }, { botId: args.botId });
+        // 直接更新用戶資料，tags 放在 body 中
+        return client.put(`/api/users/${args.userId}`, { tags: args.tags }, { botId: args.botId });
       },
     },
 

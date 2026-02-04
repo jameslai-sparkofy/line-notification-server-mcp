@@ -36,10 +36,15 @@ export function registerConversationTools(server: Server, client: LineNotificati
         required: ["targetId"],
       },
       handler: async (args: { botId?: string; targetId: string; limit?: number; before?: string }) => {
-        return client.getConversation(args.targetId, {
-          limit: args.limit,
-          before: args.before,
-        }, args.botId);
+        // 使用 query parameter 而非路徑參數
+        return client.get('/api/conversations', {
+          botId: args.botId,
+          query: {
+            userId: args.targetId,
+            ...(args.limit && { limit: args.limit }),
+            ...(args.before && { before: args.before }),
+          },
+        });
       },
     },
 
@@ -119,6 +124,67 @@ export function registerConversationTools(server: Server, client: LineNotificati
       handler: async (args: { botId?: string; type?: string; unreadOnly?: boolean; limit?: number }) => {
         const { botId, ...query } = args;
         return client.get('/api/conversations', { botId, query: query as Record<string, string | number | boolean> });
+      },
+    },
+
+    // 取得 Webhook 事件（收到的訊息紀錄）
+    line_get_webhook_events: {
+      name: "line_get_webhook_events",
+      description: `取得收到的訊息紀錄（Webhook 事件）。
+
+這是查詢用戶回傳訊息的主要方法。可依用戶 ID、群組 ID、事件類型等條件篩選。
+
+常見用法：
+- 查詢特定用戶的訊息：設定 sourceUserId
+- 查詢特定群組的訊息：設定 sourceGroupId
+- 只查詢文字訊息：設定 type=message`,
+      inputSchema: {
+        type: "object" as const,
+        properties: {
+          botId: {
+            type: "string",
+            description: "Bot 帳號 ID",
+            default: "default",
+          },
+          sourceUserId: {
+            type: "string",
+            description: "來源用戶 ID（篩選特定用戶的訊息）",
+          },
+          sourceGroupId: {
+            type: "string",
+            description: "來源群組 ID（篩選特定群組的訊息）",
+          },
+          type: {
+            type: "string",
+            enum: ["message", "follow", "unfollow", "join", "leave", "postback", "beacon"],
+            description: "事件類型篩選",
+          },
+          limit: {
+            type: "number",
+            description: "回傳筆數上限",
+            default: 50,
+          },
+          startDate: {
+            type: "string",
+            description: "開始日期（ISO 8601 格式）",
+          },
+          endDate: {
+            type: "string",
+            description: "結束日期（ISO 8601 格式）",
+          },
+        },
+      },
+      handler: async (args: {
+        botId?: string;
+        sourceUserId?: string;
+        sourceGroupId?: string;
+        type?: string;
+        limit?: number;
+        startDate?: string;
+        endDate?: string;
+      }) => {
+        const { botId, ...query } = args;
+        return client.get('/api/webhook-events', { botId, query: query as Record<string, string | number | boolean> });
       },
     },
   };

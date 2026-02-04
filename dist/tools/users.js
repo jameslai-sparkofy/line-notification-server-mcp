@@ -93,7 +93,8 @@ export function registerUserTools(server, client) {
                 required: ["userId", "tags"],
             },
             handler: async (args) => {
-                return client.put(`/api/users/${args.userId}/tags`, { tags: args.tags }, { botId: args.botId });
+                // 直接更新用戶資料，tags 放在 body 中
+                return client.put(`/api/users/${args.userId}`, { tags: args.tags }, { botId: args.botId });
             },
         },
         // 更新用戶資料
