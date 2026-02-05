@@ -83,11 +83,21 @@ export function registerConversationTools(server: Server, client: LineNotificati
             type: "string",
             description: "用戶 ID 或群組 ID",
           },
+          targetType: {
+            type: "string",
+            enum: ["user", "group"],
+            description: "目標類型（預設依 ID 格式判斷）",
+          },
         },
         required: ["targetId"],
       },
-      handler: async (args: { botId?: string; targetId: string }) => {
-        return client.post(`/api/conversations/${args.targetId}/read`, {}, { botId: args.botId });
+      handler: async (args: { botId?: string; targetId: string; targetType?: string }) => {
+        // 判斷是 userId 還是 groupId
+        const isGroup = args.targetType === 'group' || args.targetId.startsWith('C');
+        const body = isGroup
+          ? { groupId: args.targetId }
+          : { userId: args.targetId };
+        return client.post('/api/conversations/mark-read', body, { botId: args.botId });
       },
     },
 

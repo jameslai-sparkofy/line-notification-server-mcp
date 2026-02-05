@@ -89,6 +89,46 @@ export declare function registerAdminTools(server: Server, client: LineNotificat
             description?: string;
         }) => Promise<import("../client.js").ApiResponse<unknown>>;
     };
+    line_get_or_create_tag: {
+        name: string;
+        description: string;
+        inputSchema: {
+            type: "object";
+            properties: {
+                name: {
+                    type: string;
+                    description: string;
+                };
+                color: {
+                    type: string;
+                    description: string;
+                };
+                category: {
+                    type: string;
+                    enum: string[];
+                    description: string;
+                    default: string;
+                };
+                description: {
+                    type: string;
+                    description: string;
+                };
+            };
+            required: string[];
+        };
+        handler: (args: {
+            name: string;
+            color?: string;
+            category?: string;
+            description?: string;
+        }) => Promise<{
+            created: boolean;
+            success: boolean;
+            data?: unknown;
+            error?: string;
+            message?: string;
+        }>;
+    };
     line_get_stats: {
         name: string;
         description: string;

@@ -70,12 +70,18 @@ export declare function registerConversationTools(server: Server, client: LineNo
                     type: string;
                     description: string;
                 };
+                targetType: {
+                    type: string;
+                    enum: string[];
+                    description: string;
+                };
             };
             required: string[];
         };
         handler: (args: {
             botId?: string;
             targetId: string;
+            targetType?: string;
         }) => Promise<import("../client.js").ApiResponse<unknown>>;
     };
     line_list_conversations: {

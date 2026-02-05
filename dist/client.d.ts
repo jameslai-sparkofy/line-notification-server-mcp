@@ -56,12 +56,16 @@ export declare class LineNotificationClient {
     }, botId?: string): Promise<ApiResponse<unknown>>;
     /**
      * 發送訊息
+     * 使用 /api/messages/send 端點
      */
     sendMessage(target: {
         userId?: string;
         groupId?: string;
     }, message: {
         type: string;
+        text?: string;
+        altText?: string;
+        contents?: unknown;
         [key: string]: unknown;
     }, botId?: string): Promise<ApiResponse<unknown>>;
     /**

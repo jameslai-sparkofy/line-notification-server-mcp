@@ -93,6 +93,48 @@ export function registerAdminTools(server, client) {
                 return client.post('/api/tags', args);
             },
         },
+        // 取得或建立標籤
+        line_get_or_create_tag: {
+            name: "line_get_or_create_tag",
+            description: "依名稱取得標籤，若不存在則自動建立。適合用於貼標籤時不確定標籤是否已存在的情況。",
+            inputSchema: {
+                type: "object",
+                properties: {
+                    name: {
+                        type: "string",
+                        description: "標籤名稱",
+                    },
+                    color: {
+                        type: "string",
+                        description: "標籤顏色（HEX 格式，如 #FF5733）。僅在建立新標籤時使用。",
+                    },
+                    category: {
+                        type: "string",
+                        enum: ["project", "customer", "area", "product", "status", "other"],
+                        description: "標籤類別。僅在建立新標籤時使用。",
+                        default: "other",
+                    },
+                    description: {
+                        type: "string",
+                        description: "標籤描述。僅在建立新標籤時使用。",
+                    },
+                },
+                required: ["name"],
+            },
+            handler: async (args) => {
+                // 先查詢是否存在
+                const listResult = await client.get('/api/tags');
+                if (listResult.success && listResult.data?.tags) {
+                    const existingTag = listResult.data.tags.find((t) => t.name.toLowerCase() === args.name.toLowerCase());
+                    if (existingTag) {
+                        return { success: true, data: existingTag, created: false };
+                    }
+                }
+                // 不存在則建立
+                const createResult = await client.post('/api/tags', args);
+                return { ...createResult, created: true };
+            },
+        },
         // 取得統計資料
         line_get_stats: {
             name: "line_get_stats",

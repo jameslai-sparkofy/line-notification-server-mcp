@@ -135,5 +135,54 @@ export declare function registerMessagingTools(server: Server, client: LineNotif
             limit?: number;
         }) => Promise<import("../client.js").ApiResponse<unknown>>;
     };
+    line_list_message_templates: {
+        name: string;
+        description: string;
+        inputSchema: {
+            type: "object";
+            properties: {
+                category: {
+                    type: string;
+                    description: string;
+                };
+            };
+        };
+        handler: (args: {
+            category?: string;
+        }) => Promise<import("../client.js").ApiResponse<unknown>>;
+    };
+    line_create_message: {
+        name: string;
+        description: string;
+        inputSchema: {
+            type: "object";
+            properties: {
+                botId: {
+                    type: string;
+                    description: string;
+                    default: string;
+                };
+                name: {
+                    type: string;
+                    description: string;
+                };
+                templateId: {
+                    type: string;
+                    description: string;
+                };
+                params: {
+                    type: string;
+                    description: string;
+                };
+            };
+            required: string[];
+        };
+        handler: (args: {
+            botId?: string;
+            name: string;
+            templateId: string;
+            params: Record<string, unknown>;
+        }) => Promise<import("../client.js").ApiResponse<unknown>>;
+    };
 };
 //# sourceMappingURL=messaging.d.ts.map

@@ -136,10 +136,10 @@ export function registerCampaignTools(server, client) {
                 }, { botId: args.botId });
             },
         },
-        // 取消活動
+        // 取消活動（透過更新 isActive 為 false）
         line_cancel_campaign: {
             name: "line_cancel_campaign",
-            description: "取消推播活動",
+            description: "取消推播活動（將活動設為停用）",
             inputSchema: {
                 type: "object",
                 properties: {
@@ -156,7 +156,8 @@ export function registerCampaignTools(server, client) {
                 required: ["campaignId"],
             },
             handler: async (args) => {
-                return client.post(`/api/campaigns/${args.campaignId}/cancel`, {}, { botId: args.botId });
+                // Server 沒有 cancel 端點，改用 PUT 更新 isActive
+                return client.put(`/api/campaigns/${args.campaignId}`, { isActive: false }, { botId: args.botId });
             },
         },
     };

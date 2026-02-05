@@ -118,16 +118,16 @@ export function registerMessagingTools(server, client) {
                 }, { botId });
             },
         },
-        // 列出訊息模板
+        // 列出已建立的訊息
         line_list_templates: {
             name: "line_list_templates",
-            description: "列出可用的訊息模板",
+            description: "列出已建立的訊息（從模板建立的訊息實例）",
             inputSchema: {
                 type: "object",
                 properties: {
                     category: {
                         type: "string",
-                        description: "模板類別篩選",
+                        description: "訊息類別篩選",
                     },
                     limit: {
                         type: "number",
@@ -144,6 +144,64 @@ export function registerMessagingTools(server, client) {
                         limit,
                     },
                 });
+            },
+        },
+        // 列出訊息模板定義
+        line_list_message_templates: {
+            name: "line_list_message_templates",
+            description: "列出可用的訊息模板定義（用於建立新訊息）",
+            inputSchema: {
+                type: "object",
+                properties: {
+                    category: {
+                        type: "string",
+                        description: "模板類別篩選",
+                    },
+                },
+            },
+            handler: async (args) => {
+                const { category } = args;
+                return client.get('/api/templates', {
+                    query: {
+                        ...(category && { category }),
+                    },
+                });
+            },
+        },
+        // 從模板建立訊息
+        line_create_message: {
+            name: "line_create_message",
+            description: "從模板建立新訊息。建立後可用 line_send_template 發送，或透過 messageId 追蹤點擊統計。",
+            inputSchema: {
+                type: "object",
+                properties: {
+                    botId: {
+                        type: "string",
+                        description: "Bot 帳號 ID",
+                        default: "default",
+                    },
+                    name: {
+                        type: "string",
+                        description: "訊息名稱（用於識別和管理）",
+                    },
+                    templateId: {
+                        type: "string",
+                        description: "模板 ID（從 line_list_message_templates 取得）",
+                    },
+                    params: {
+                        type: "object",
+                        description: "模板參數（根據模板定義的 parameters 填入）",
+                    },
+                },
+                required: ["name", "templateId", "params"],
+            },
+            handler: async (args) => {
+                const { botId, name, templateId, params } = args;
+                return client.post('/api/messages', {
+                    name,
+                    templateId,
+                    params,
+                }, { botId });
             },
         },
     };

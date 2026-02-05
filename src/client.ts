@@ -131,16 +131,39 @@ export class LineNotificationClient {
 
   /**
    * 發送訊息
+   * 使用 /api/messages/send 端點
    */
   async sendMessage(
     target: { userId?: string; groupId?: string },
-    message: { type: string; [key: string]: unknown },
+    message: { type: string; text?: string; altText?: string; contents?: unknown; [key: string]: unknown },
     botId?: string
   ) {
-    return this.post('/api/push', {
-      to: target.userId || target.groupId,
-      messages: [message],
-    }, { botId });
+    // 轉換為 /api/messages/send 格式
+    const body: Record<string, unknown> = {
+      type: message.type,
+    };
+
+    // 設定目標
+    if (target.userId) {
+      body.userId = target.userId;
+    } else if (target.groupId) {
+      body.groupId = target.groupId;
+    }
+
+    // 根據訊息類型設定 data
+    if (message.type === 'text') {
+      body.data = { text: message.text };
+    } else if (message.type === 'flex') {
+      body.data = {
+        altText: message.altText || '訊息',
+        contents: message.contents,
+      };
+    } else {
+      // 其他類型直接傳遞
+      body.data = message;
+    }
+
+    return this.post('/api/messages/send', body, { botId });
   }
 
   /**
